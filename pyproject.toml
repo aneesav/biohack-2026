@@ -1,0 +1,43 @@
+[project]
+name = "biohack-2026"
+version = "0.1.0"
+description = "scRNA-seq analysis + ML/AI pipeline for hackathon participants: ingest, QC, classical clustering, and foundation-model-powered cell type annotation"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "scanpy>=1.10",
+    "anndata>=0.10",
+    "leidenalg>=0.10",
+    "python-igraph>=0.11",
+    # pinned together: newer llvmlite/numba drop x86_64 macOS wheels, which breaks
+    # scanpy's umap/leiden steps on Intel Macs by forcing a source build (needs LLVM).
+    "numba==0.61.2",
+    "llvmlite==0.44.0",
+    # capped <2: torch stopped publishing macOS x86_64 (Intel) wheels after 2.2.x,
+    # and torch 2.2.x is only ABI-compatible with NumPy 1.x.
+    "numpy>=1.23,<2",
+    "pandas>=2.0",
+    "matplotlib>=3.7",
+    "seaborn>=0.12",
+    "scikit-learn>=1.2",
+    "scipy>=1.10",
+    "torch>=2.0.1",
+    "transformers==4.46.3",
+    "datasets>=2.12",
+    "mygene>=3.2",
+    "huggingface_hub>=0.25",
+    "loompy>=3.0",
+    "jupyter>=1.0",
+    "jupyterlab>=4.0",
+    "ipykernel>=6.0",
+    "ipywidgets>=8.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.5"]
+
+[build-system]
+requires = ["setuptools>=65.6", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = []

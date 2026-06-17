@@ -1,0 +1,11 @@
+vendor/
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+data/pbmc3k_qc.h5ad
+data/pbmc3k_cell_type_labels.csv
+data/pbmc3k_pca_features.csv
+data/pbmc3k_geneformer_embeddings.npy
+data/pbmc3k_geneformer_cell_ids.csv
+biohack_2026.egg-info/
