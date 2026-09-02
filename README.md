@@ -62,6 +62,67 @@ export HF_TOKEN=hf_your_token_here
 
 before running `scripts/setup_geneformer.sh`.
 
+## Running on Google Colab
+
+You don't need a local install to try this — clone and install straight into Colab runtime ==
+3.12.13 (or the "2026.07" fallback runtime).
+
+**First, pin the runtime to Python 3.12** — this repo's `pyproject.toml` requires
+`>=3.10,<3.13`, and Colab's latest default runtime has moved to Python 3.13.15, which fails
+`pip install -e .` outright at dependency resolution (before you even get to any NumPy issue).
+Open the Command Palette (`Cmd/Ctrl+Shift+P`), search **"runtime version"**, and select the
+**fallback/previous runtime** (labeled "2026.07"), then reconnect. Confirm you're
+on 3.12 before installing:
+
+```python
+import sys
+print("Python version:", sys.version)   # should start with 3.12, not 3.13
+```
+
+Then clone and install:
+
+```python
+!git clone https://github.com/aneesav/biohack-2026.git
+%cd biohack-2026
+!pip install -e . -q
+```
+
+**Then restart the runtime before importing anything**, via **Runtime → Restart session** in the
+Colab menu, or by running this at the end of the same cell:
+
+```python
+import os
+os.kill(os.getpid(), 9)  # restarts the Colab kernel
+```
+
+After the restart, re-run your imports (`import scanpy as sc`, etc.) in a fresh cell — no need to
+reinstall.
+
+**Why the restart is required:** Colab's base image ships NumPy 2.x, and several preinstalled
+binary packages are already compiled against its C struct layout. This repo pins `numpy<2` (see
+Troubleshooting below), so `pip install -e .` downgrades NumPy inside the *already-running* Colab
+kernel — but that kernel still has NumPy 2.x's compiled extensions loaded from session start. The
+dtype struct size actually changed between NumPy 1.x and 2.x, so skipping the restart surfaces as:
+
+```
+ValueError: numpy.dtype size changed, may indicate binary incompatibility.
+Expected 96 from C header, got 88 from PyObject
+```
+
+Restarting starts a clean process against the newly-installed NumPy and resolves it. Note this is
+a separate issue from the Python 3.13 failure above: the 3.12 pin is a hard requirement (`pip
+install -e .` cannot resolve on 3.13 at all), while the restart fixes a kernel-lifecycle ABI clash
+that happens once you're already on a supported Python version — no further version-hopping needed
+beyond landing on 3.12.
+
+**Loading adata:** - if the AnnData import cell can't find the repo (e.g. you cloned somewhere other than
+`/content/biohack-2026`), `%cd` there yourself before running anything else:
+
+```python
+%cd /content/biohack-2026/notebooks
+```
+
+
 ## Repo structure
 
 ```
